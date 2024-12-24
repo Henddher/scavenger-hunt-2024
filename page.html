@@ -1,0 +1,85 @@
+<html>
+<body>
+  <h1 id="text"></h1>
+  <div>
+    <label for="kw1">Keyword 1</label>
+    <input type="text" id="kw1"/>
+    <label for="kw2">Keyword 2</label>
+    <input type="text" id="kw2"/>
+    <input value="go" type="button" onclick="go(200)"/>
+  </div>
+  <video muted style="display:none"></video>
+  <canvas id="canvas"> </canvas>
+  <div class="photos" id="photos"></div>
+  <script>
+    const constraints = {
+      audio: false,
+      video: { width: 1280, height: 720 },
+    };
+    const text = document.getElementById("text");
+    text.style.fontSize = 100;
+    const video = document.querySelector("video");
+    const canvas = document.getElementById("canvas");
+    const output = document.getElementById("photos");
+    output.style.display = "none";
+    video.style.display = "none";
+    canvas.style.display = "none";
+    let pics = 10;
+
+    const kw1TextField = document.getElementById("kw1");
+    const kw2TextField = document.getElementById("kw2");
+
+    navigator.mediaDevices
+      .getUserMedia(constraints)
+      .then((stream) => {
+        video.srcObject = stream;
+        video.play();
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+
+    function kickIt() {
+      console.log(pics);
+      if (kw1TextField.value != "tictactoe" || kw2TextField.value != "windroses") {
+        text.innerText = "❌ intenten otra vez."
+        setTimeout(()=> {
+          text.innerText = "";
+        }, 1500);
+        return;
+      }
+
+      text.innerText = "🧀".repeat(pics);
+      const context = canvas.getContext("2d");
+      canvas.width = constraints.video.width;
+      canvas.height = constraints.video.height;
+      context.drawImage(
+        video, 0, 0, 
+        constraints.video.width, 
+        constraints.video.height);
+      const data = canvas.toDataURL("image/png");
+      let photo = document.createElement("img", {});
+      photo.setAttribute("src", data);
+      output.appendChild(photo);
+      console.log(":)", pics);
+
+      if (pics > 0) {
+        go(1000);
+      } else {
+        output.style.display = "block";
+        text.innerText = " 🎄🎄 Feliz Navidad 🎄🎄"
+      }
+      --pics;
+    }
+
+    function go(delay) {
+      setTimeout(() => {
+        kickIt();
+      }, delay);
+    }
+
+  </script>
+  
+</body>
+
+</html>
